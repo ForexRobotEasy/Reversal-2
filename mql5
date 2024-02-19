@@ -1,0 +1,75 @@
+
+//+------------------------------------------------------------------+
+//|                                                       Reversal 2 |
+//|                                 Developed by Forex Robot Easy Team |
+//|                                                      forexroboteasy.com |
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//| Custom indicator initialization function                         |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+    //--- indicator buffers mapping
+    SetIndexStyle(0,DRAW_ARROW);
+    SetIndexArrow(0,159);
+    SetIndexBuffer(0,ExtMapBuffer1);
+    SetIndexBuffer(1,ExtMapBuffer2);
+    IndicatorDigits(Digits);
+    
+    //--- return value of initialization function
+    return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Custom indicator iteration function                              |
+//+------------------------------------------------------------------+
+int OnCalculate(const int rates_total,
+                const int prev_calculated,
+                const datetime &time[],
+                const double &open[],
+                const double &high[],
+                const double &low[],
+                const double &close[],
+                const long &tick_volume[],
+                const long &volume[],
+                const int &spread[])
+{
+    //--- check for bars count
+    if(rates_total<1)
+        return(0);
+    
+    //--- declaration of local variables
+    int limit;
+    
+    //--- counting the bars to be calculated
+    limit=prev_calculated-IndicatorCounted();
+    
+    //--- main loop
+    for(int i=limit; i<rates_total && !IsStopped(); i++)
+    {
+        //--- calculate the indicator
+        if(/* condition to identify trend entry points */)
+        {
+            //--- generate signal
+            if(/* condition to generate a buy signal */)
+            {
+                ExtMapBuffer1[i]=high[i]-Point;
+                ExtMapBuffer2[i]=0;
+            }
+            else if(/* condition to generate a sell signal */)
+            {
+                ExtMapBuffer1[i]=low[i]+Point;
+                ExtMapBuffer2[i]=1;
+            }
+        }
+        else
+        {
+            ExtMapBuffer1[i]=EMPTY_VALUE;
+            ExtMapBuffer2[i]=EMPTY_VALUE;
+        }
+    }
+    
+    //--- return value of prev_calculated for next call
+    return(rates_total);
+}
